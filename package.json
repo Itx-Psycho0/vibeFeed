@@ -1,0 +1,29 @@
+{
+  "name": "vibefeed",
+  "version": "1.0.0",
+  "description": "this is the social media app by me using mern stack ",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "backend",
+    "full",
+    "stack",
+    "project",
+    "vibefeed",
+    "youtube"
+  ],
+  "author": "psycho",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.3.3",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.14"
+  }
+}
