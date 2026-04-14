@@ -5,6 +5,8 @@ import requestLogger from './middlewares/requestLogger.js'
 import notFound from './middlewares/notFound.js'
 import errorHandler from './middlewares/errorHandler.js'
 
+// Routes imports
+import userRoutes from './routes/user.routes.js'
 
 //server
 const app = express()
@@ -42,6 +44,9 @@ app.get('/health', (req, res) => {
     })
 })
 
+
+// routes
+app.use('/api/v1/users', userRoutes)
 
 
 //not found middleware
