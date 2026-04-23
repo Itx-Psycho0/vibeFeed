@@ -1,46 +1,176 @@
-import User from '../models/user.model.js';
+import User from '../models/user.model.js'
 
+/**
+ * @route   POST /api/v1/users/register
+ * @desc    Register a new user (legacy — prefer /api/v1/auth/register)
+ * @access  Public
+ */
 export const registerUser = async (req, res, next) => {
-    try {
-        const { username, email, password, fullName } = req.body;
+  try {
+    const { username, email, password, fullName } = req.body
 
-        // Basic validation
-        if (!username || !email || !password || !fullName) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please provide all required fields: username, email, password, and fullName',
-            });
-        }
-
-        // Check if user already exists
-        const existingUser = await User.findOne({
-            $or: [{ email }, { username }],
-        });
-
-        if (existingUser) {
-            return res.status(409).json({
-                success: false,
-                message: 'User with this email or username already exists',
-            });
-        }
-
-        // Create new user
-        const user = await User.create({
-            username,
-            email,
-            password, // Mongoose pre-save hook handles hashing
-            fullName,
-        });
-
-        // Return user data without password
-        const createdUser = await User.findById(user._id).select('-password');
-
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully',
-            data: createdUser,
-        });
-    } catch (error) {
-        next(error); // Pass error to global error handler
+    if (!username || !email || !password || !fullName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide all required fields: username, email, password, and fullName',
+      })
     }
-};
+
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] })
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: 'User with this email or username already exists' })
+    }
+
+    const user = await User.create({ username, email, password, fullName })
+    const createdUser = await User.findById(user._id)
+
+    res.status(201).json({ success: true, message: 'User registered successfully', data: createdUser })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/:id
+ * @desc    Get user profile by ID
+ * @access  Private
+ */
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .populate('followers', 'username fullName profilePicture')
+      .populate('following', 'username fullName profilePicture')
+
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' })
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...user.toObject(),
+        followersCount: user.followers.length,
+        followingCount: user.following.length,
+        postsCount: user.posts.length,
+      },
+    })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   PUT /api/v1/users/profile
+ * @desc    Update current user profile
+ * @access  Private
+ */
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { fullName, bio, profilePicture, isPrivate } = req.body
+
+    const user = await User.findById(req.user._id)
+    if (fullName !== undefined) user.fullName = fullName
+    if (bio !== undefined) user.bio = bio
+    if (profilePicture !== undefined) user.profilePicture = profilePicture
+    if (isPrivate !== undefined) user.isPrivate = isPrivate
+
+    await user.save()
+
+    res.status(200).json({ success: true, message: 'Profile updated successfully', data: user })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   POST /api/v1/users/:id/follow
+ * @desc    Follow / Unfollow a user (toggle)
+ * @access  Private
+ */
+export const toggleFollow = async (req, res, next) => {
+  try {
+    const targetUserId = req.params.id
+    const currentUserId = req.user._id
+
+    if (targetUserId === currentUserId.toString()) {
+      return res.status(400).json({ success: false, message: 'You cannot follow yourself' })
+    }
+
+    const targetUser = await User.findById(targetUserId)
+    if (!targetUser) return res.status(404).json({ success: false, message: 'User not found' })
+
+    const isFollowing = req.user.following.includes(targetUserId)
+
+    if (isFollowing) {
+      // Unfollow
+      await User.findByIdAndUpdate(currentUserId, { $pull: { following: targetUserId } })
+      await User.findByIdAndUpdate(targetUserId, { $pull: { followers: currentUserId } })
+      return res.status(200).json({ success: true, message: 'User unfollowed', data: { following: false } })
+    }
+
+    // Follow
+    await User.findByIdAndUpdate(currentUserId, { $push: { following: targetUserId } })
+    await User.findByIdAndUpdate(targetUserId, { $push: { followers: currentUserId } })
+    res.status(200).json({ success: true, message: 'User followed', data: { following: true } })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/:id/followers
+ * @desc    Get followers of a user
+ * @access  Private
+ */
+export const getFollowers = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .populate('followers', 'username fullName profilePicture bio')
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' })
+    res.status(200).json({ success: true, data: user.followers, total: user.followers.length })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/:id/following
+ * @desc    Get users that a user is following
+ * @access  Private
+ */
+export const getFollowing = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .populate('following', 'username fullName profilePicture bio')
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' })
+    res.status(200).json({ success: true, data: user.following, total: user.following.length })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/search?q=keyword
+ * @desc    Search users by username or fullName
+ * @access  Private
+ */
+export const searchUsers = async (req, res, next) => {
+  try {
+    const { q } = req.query
+    if (!q) return res.status(400).json({ success: false, message: 'Search query is required' })
+
+    const users = await User.find({
+      $or: [
+        { username: { $regex: q, $options: 'i' } },
+        { fullName: { $regex: q, $options: 'i' } },
+      ],
+    })
+      .limit(20)
+      .select('username fullName profilePicture bio')
+
+    res.status(200).json({ success: true, data: users, total: users.length })
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/suggested
+ * @desc    Get suggested users (users the current user is not following)
+ * @access  Private
+ */
+export const getSuggestedUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({
+      _id: { $ne: req.user._id, $nin: req.user.following },
+    })
+      .limit(10)
+      .select('username fullName profilePicture bio')
+
+    res.status(200).json({ success: true, data: users })
+  } catch (error) { next(error) }
+}

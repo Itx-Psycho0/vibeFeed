@@ -1,8 +1,25 @@
-import express from 'express';
-import { registerUser } from '../controllers/user.controller.js';
+import express from 'express'
+import {
+  registerUser, getUserProfile, updateProfile,
+  toggleFollow, getFollowers, getFollowing,
+  searchUsers, getSuggestedUsers,
+} from '../controllers/user.controller.js'
+import auth from '../middlewares/auth.middleware.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/register', registerUser);
+// Public
+router.post('/register', registerUser)
 
-export default router;
+// Protected — put static routes BEFORE :id param routes
+router.get('/search', auth, searchUsers)
+router.get('/suggested', auth, getSuggestedUsers)
+router.put('/profile', auth, updateProfile)
+
+// Param-based routes
+router.get('/:id', auth, getUserProfile)
+router.post('/:id/follow', auth, toggleFollow)
+router.get('/:id/followers', auth, getFollowers)
+router.get('/:id/following', auth, getFollowing)
+
+export default router

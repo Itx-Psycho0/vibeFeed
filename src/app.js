@@ -6,7 +6,14 @@ import notFound from './middlewares/notFound.js'
 import errorHandler from './middlewares/errorHandler.js'
 
 // Routes imports
+import authRoutes from './routes/auth.route.js'
 import userRoutes from './routes/user.routes.js'
+import postRoutes from './routes/post.routes.js'
+import commentRoutes from './routes/comment.routes.js'
+import likeRoutes from './routes/like.routes.js'
+import storyRoutes from './routes/story.routes.js'
+import notificationRoutes from './routes/notification.routes.js'
+import messageRoutes from './routes/message.routes.js'
 
 //server
 const app = express()
@@ -45,8 +52,15 @@ app.get('/health', (req, res) => {
 })
 
 
-// routes
+// ─── API Routes ────────────────────────────────────────
+app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/users', userRoutes)
+app.use('/api/v1/posts', postRoutes)
+app.use('/api/v1/comments', commentRoutes)
+app.use('/api/v1/likes', likeRoutes)
+app.use('/api/v1/stories', storyRoutes)
+app.use('/api/v1/notifications', notificationRoutes)
+app.use('/api/v1/messages', messageRoutes)
 
 
 //not found middleware
