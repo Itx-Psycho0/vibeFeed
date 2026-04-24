@@ -14,6 +14,7 @@ import likeRoutes from './routes/like.routes.js'
 import storyRoutes from './routes/story.routes.js'
 import notificationRoutes from './routes/notification.routes.js'
 import messageRoutes from './routes/message.routes.js'
+import uploadRoutes from './routes/upload.routes.js'
 
 //server
 const app = express()
@@ -61,6 +62,7 @@ app.use('/api/v1/likes', likeRoutes)
 app.use('/api/v1/stories', storyRoutes)
 app.use('/api/v1/notifications', notificationRoutes)
 app.use('/api/v1/messages', messageRoutes)
+app.use('/api/v1/upload', uploadRoutes)
 
 
 //not found middleware
