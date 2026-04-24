@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./src/config/db.js";
+import { connectRedis } from "./src/config/redis.js";
 import app from "./src/app.js"
 
 const port = process.env.PORT || 8000;
@@ -10,6 +11,9 @@ const createServer = async () => {
     try{
         //database connection
         await connectDB();
+        
+        //redis connection
+        await connectRedis();
 
         //server
         const server = app.listen(port, () => {

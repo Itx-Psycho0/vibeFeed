@@ -1,6 +1,7 @@
 import Post from '../models/post.model.js'
 import User from '../models/user.model.js'
 import Comment from '../models/comment.model.js'
+import { getRedisClient } from '../config/redis.js'
 
 /**
  * @route   POST /api/v1/posts
@@ -28,6 +29,15 @@ export const createPost = async (req, res, next) => {
       'author',
       'username fullName profilePicture'
     )
+
+    // Clear cache
+    const redisClient = getRedisClient();
+    if (redisClient) {
+      const keys = await redisClient.keys('explore_posts_*');
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -99,6 +109,16 @@ export const getExplorePosts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20
     const skip = (page - 1) * limit
 
+    const redisClient = getRedisClient();
+    const cacheKey = `explore_posts_${page}_${limit}`;
+
+    if (redisClient) {
+      const cachedData = await redisClient.get(cacheKey);
+      if (cachedData) {
+        return res.status(200).json(JSON.parse(cachedData));
+      }
+    }
+
     const posts = await Post.find({ isArchived: false })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -107,7 +127,7 @@ export const getExplorePosts = async (req, res, next) => {
 
     const total = await Post.countDocuments({ isArchived: false })
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       data: posts,
       pagination: {
@@ -116,7 +136,13 @@ export const getExplorePosts = async (req, res, next) => {
         total,
         pages: Math.ceil(total / limit),
       },
-    })
+    };
+
+    if (redisClient) {
+      await redisClient.setEx(cacheKey, 600, JSON.stringify(responseData)); // Cache for 10 minutes
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
     next(error)
   }
@@ -188,6 +214,15 @@ export const updatePost = async (req, res, next) => {
       'username fullName profilePicture'
     )
 
+    // Clear cache
+    const redisClient = getRedisClient();
+    if (redisClient) {
+      const keys = await redisClient.keys('explore_posts_*');
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: 'Post updated successfully',
@@ -232,6 +267,15 @@ export const deletePost = async (req, res, next) => {
 
     // Delete the post
     await Post.findByIdAndDelete(post._id)
+
+    // Clear cache
+    const redisClient = getRedisClient();
+    if (redisClient) {
+      const keys = await redisClient.keys('explore_posts_*');
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+    }
 
     res.status(200).json({
       success: true,
