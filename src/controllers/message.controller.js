@@ -1,5 +1,6 @@
 import Conversation from '../models/conversation.model.js'
 import Message from '../models/message.model.js'
+import { getIO, getReceiverSocketId } from '../socket/index.js'
 
 export const getConversations = async (req, res, next) => {
   try {
@@ -74,6 +75,16 @@ export const sendMessage = async (req, res, next) => {
     await conversation.save()
 
     const populated = await Message.findById(message._id).populate('sender', 'username fullName profilePicture')
+    
+    // Socket.io integration
+    const receiverId = conversation.participants.find(p => p.toString() !== req.user._id.toString());
+    if (receiverId) {
+      const receiverSocketId = getReceiverSocketId(receiverId);
+      if (receiverSocketId) {
+        getIO().to(receiverSocketId).emit('new_message', populated);
+      }
+    }
+
     res.status(201).json({ success: true, data: populated })
   } catch (error) { next(error) }
 }

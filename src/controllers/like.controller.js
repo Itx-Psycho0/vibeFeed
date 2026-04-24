@@ -1,6 +1,8 @@
 import Like from '../models/like.model.js'
 import Post from '../models/post.model.js'
 import Comment from '../models/comment.model.js'
+import Notification from '../models/notification.model.js'
+import { getIO, getReceiverSocketId } from '../socket/index.js'
 
 /**
  * @route   POST /api/v1/likes/post/:postId
@@ -50,6 +52,25 @@ export const togglePostLike = async (req, res, next) => {
     await Post.findByIdAndUpdate(postId, {
       $push: { likes: req.user._id },
     })
+
+    // Create Notification
+    if (post.author.toString() !== req.user._id.toString()) {
+      const notification = await Notification.create({
+        recipient: post.author,
+        sender: req.user._id,
+        type: 'like',
+        reference: post._id,
+        onModel: 'Post'
+      });
+
+      const populatedNotification = await Notification.findById(notification._id)
+        .populate('sender', 'username fullName profilePicture');
+
+      const receiverSocketId = getReceiverSocketId(post.author);
+      if (receiverSocketId) {
+        getIO().to(receiverSocketId).emit('new_notification', populatedNotification);
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -106,6 +127,25 @@ export const toggleCommentLike = async (req, res, next) => {
     await Comment.findByIdAndUpdate(commentId, {
       $push: { likes: req.user._id },
     })
+
+    // Create Notification
+    if (comment.author.toString() !== req.user._id.toString()) {
+      const notification = await Notification.create({
+        recipient: comment.author,
+        sender: req.user._id,
+        type: 'like',
+        reference: comment._id,
+        onModel: 'Comment'
+      });
+
+      const populatedNotification = await Notification.findById(notification._id)
+        .populate('sender', 'username fullName profilePicture');
+
+      const receiverSocketId = getReceiverSocketId(comment.author);
+      if (receiverSocketId) {
+        getIO().to(receiverSocketId).emit('new_notification', populatedNotification);
+      }
+    }
 
     res.status(200).json({
       success: true,

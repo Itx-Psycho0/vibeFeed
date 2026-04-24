@@ -1,5 +1,7 @@
 import Comment from '../models/comment.model.js'
 import Post from '../models/post.model.js'
+import Notification from '../models/notification.model.js'
+import { getIO, getReceiverSocketId } from '../socket/index.js'
 
 /**
  * @route   POST /api/v1/comments/:postId
@@ -20,9 +22,10 @@ export const addComment = async (req, res, next) => {
       })
     }
 
+    let parent = null;
     // If replying to a comment, verify parent exists
     if (parentComment) {
-      const parent = await Comment.findById(parentComment)
+      parent = await Comment.findById(parentComment)
       if (!parent) {
         return res.status(404).json({
           success: false,
@@ -45,6 +48,26 @@ export const addComment = async (req, res, next) => {
 
     const populatedComment = await Comment.findById(comment._id)
       .populate('author', 'username fullName profilePicture')
+
+    // Create Notification
+    const recipientId = parent ? parent.author : post.author;
+    if (recipientId.toString() !== req.user._id.toString()) {
+      const notification = await Notification.create({
+        recipient: recipientId,
+        sender: req.user._id,
+        type: 'comment',
+        reference: comment._id,
+        onModel: 'Comment',
+      });
+
+      const populatedNotification = await Notification.findById(notification._id)
+        .populate('sender', 'username fullName profilePicture');
+
+      const receiverSocketId = getReceiverSocketId(recipientId);
+      if (receiverSocketId) {
+        getIO().to(receiverSocketId).emit('new_notification', populatedNotification);
+      }
+    }
 
     res.status(201).json({
       success: true,

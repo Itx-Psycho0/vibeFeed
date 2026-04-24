@@ -1,4 +1,6 @@
 import User from '../models/user.model.js'
+import Notification from '../models/notification.model.js'
+import { getIO, getReceiverSocketId } from '../socket/index.js'
 
 /**
  * @route   POST /api/v1/users/register
@@ -103,6 +105,24 @@ export const toggleFollow = async (req, res, next) => {
     // Follow
     await User.findByIdAndUpdate(currentUserId, { $push: { following: targetUserId } })
     await User.findByIdAndUpdate(targetUserId, { $push: { followers: currentUserId } })
+
+    // Create Notification
+    const notification = await Notification.create({
+      recipient: targetUserId,
+      sender: currentUserId,
+      type: 'follow',
+      reference: currentUserId,
+      onModel: 'User',
+    });
+
+    const populatedNotification = await Notification.findById(notification._id)
+      .populate('sender', 'username fullName profilePicture');
+
+    const receiverSocketId = getReceiverSocketId(targetUserId);
+    if (receiverSocketId) {
+      getIO().to(receiverSocketId).emit('new_notification', populatedNotification);
+    }
+
     res.status(200).json({ success: true, message: 'User followed', data: { following: true } })
   } catch (error) { next(error) }
 }
