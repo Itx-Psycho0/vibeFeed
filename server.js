@@ -22,6 +22,12 @@ const createServer = async () => {
           `)
         })
 
+        // Initialize Socket.io
+        import("./src/socket/index.js").then((socketModule) => {
+            socketModule.initSocket(server);
+            console.log("Socket.io Initialized");
+        });
+
         // graceful shutdown        
         process.on("unhandledRejection", (err) => {
             console.log("unhandled rejection", err)
