@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   createPost, getFeedPosts, getExplorePosts,
-  getPostById, updatePost, deletePost, getUserPosts,
+  getPostById, updatePost, deletePost, getUserPosts, searchPosts
 } from '../controllers/post.controller.js'
 import auth from '../middlewares/auth.middleware.js'
 
@@ -13,6 +13,7 @@ router.use(auth)
 router.post('/', createPost)
 router.get('/', getFeedPosts)
 router.get('/explore', getExplorePosts)
+router.get('/search', searchPosts)
 router.get('/user/:userId', getUserPosts)
 router.get('/:id', getPostById)
 router.put('/:id', updatePost)

@@ -325,3 +325,54 @@ export const getUserPosts = async (req, res, next) => {
     next(error)
   }
 }
+
+/**
+ * @route   GET /api/v1/posts/search?q=keyword
+ * @desc    Search posts by caption or hashtags
+ * @access  Private
+ */
+export const searchPosts = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ success: false, message: 'Search query is required' });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const posts = await Post.find({
+      $or: [
+        { caption: { $regex: q, $options: 'i' } },
+        { hashtags: { $regex: q, $options: 'i' } }
+      ],
+      isArchived: false
+    })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('author', 'username fullName profilePicture');
+
+    const total = await Post.countDocuments({
+      $or: [
+        { caption: { $regex: q, $options: 'i' } },
+        { hashtags: { $regex: q, $options: 'i' } }
+      ],
+      isArchived: false
+    });
+
+    res.status(200).json({
+      success: true,
+      data: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}

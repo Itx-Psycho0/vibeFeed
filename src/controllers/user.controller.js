@@ -194,3 +194,49 @@ export const getSuggestedUsers = async (req, res, next) => {
     res.status(200).json({ success: true, data: users })
   } catch (error) { next(error) }
 }
+
+/**
+ * @route   POST /api/v1/users/:id/bookmark
+ * @desc    Bookmark / Unbookmark a post
+ * @access  Private
+ */
+export const toggleBookmark = async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const isBookmarked = user.bookmarks.includes(postId);
+
+    if (isBookmarked) {
+      // Remove bookmark
+      user.bookmarks.pull(postId);
+      await user.save();
+      return res.status(200).json({ success: true, message: 'Post removed from bookmarks', data: { bookmarked: false } });
+    }
+
+    // Add bookmark
+    user.bookmarks.push(postId);
+    await user.save();
+    return res.status(200).json({ success: true, message: 'Post bookmarked', data: { bookmarked: true } });
+  } catch (error) { next(error) }
+}
+
+/**
+ * @route   GET /api/v1/users/bookmarks
+ * @desc    Get bookmarked posts
+ * @access  Private
+ */
+export const getBookmarks = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: 'bookmarks',
+      populate: { path: 'author', select: 'username fullName profilePicture' }
+    });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    res.status(200).json({ success: true, data: user.bookmarks });
+  } catch (error) { next(error) }
+}
