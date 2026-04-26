@@ -5,6 +5,10 @@ import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Explore from './pages/Explore';
+import Notifications from './pages/Notifications';
+import Messages from './pages/Messages';
+import Profile from './pages/Profile';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -26,6 +30,10 @@ function App() {
             <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
             <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
             <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/explore" element={<PrivateRoute><Explore /></PrivateRoute>} />
+            <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+            <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
+            <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
           </Routes>
         </main>
       </div>
