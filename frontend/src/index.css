@@ -1,73 +1,118 @@
+/* ============================================================================
+ * 📁 FILE: index.css — Global Styles & Design System
+ * 📍 LOCATION: frontend/src/index.css
+ * 📚 TOPIC: CSS Variables, CSS Reset, Design Tokens, Utility Classes, Animations
+ * 🏗️ BUILD ORDER: Frontend Step 0 — Create the design system FIRST
+ * ============================================================================
+ *
+ * 🎯 PURPOSE:
+ * This file defines the GLOBAL design system for the entire app.
+ * It includes: CSS variables (design tokens), CSS reset, utility classes,
+ * and base component styles that are reused across all pages.
+ *
+ * 🧠 CSS VARIABLES (Custom Properties):
+ * Variables like --bg-color let you define colors ONCE and reuse everywhere.
+ * To change the entire app's color scheme, just change these variables!
+ *
+ * 🧠 CSS RESET:
+ * Browsers have different default styles. The * { margin: 0; padding: 0; }
+ * reset ensures all elements start from the same baseline across browsers.
+ *
+ * 🔀 ALTERNATIVES: Tailwind CSS (utility-first), SCSS/Sass (nesting, mixins),
+ *                  CSS Modules (scoped CSS), Styled Components (CSS-in-JS)
+ *
+ * 🔮 FUTURE: Add light/dark theme toggle using CSS variable switching,
+ *           add more responsive breakpoints, add skeleton loading styles
+ * ============================================================================ */
+
+/* ─── Google Fonts Import ──────────────────────────────────────────────────── */
+/* Inter is a modern, highly legible font designed for screens                 */
+/* 'display=swap' ensures text is visible while the font loads (good for UX)  */
+/* TOPIC: Web Fonts — Loading custom fonts from Google's CDN                  */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* ─── CSS Variables (Design Tokens) ───────────────────────────────────────── */
+/* :root targets the <html> element — variables defined here are GLOBAL        */
+/* TOPIC: CSS Custom Properties — Reusable values that can be changed in one place */
 :root {
-  --bg-color: #0f172a;
-  --bg-secondary: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --primary-accent: #6366f1;
-  --primary-hover: #4f46e5;
-  --border-color: #334155;
-  --danger: #ef4444;
-  --success: #10b981;
+  --bg-color: #0f172a;          /* Dark navy — main background */
+  --bg-secondary: #1e293b;      /* Slightly lighter — cards, inputs */
+  --text-primary: #f8fafc;       /* Almost white — main text */
+  --text-secondary: #94a3b8;     /* Gray blue — secondary/muted text */
+  --primary-accent: #6366f1;     /* Indigo — buttons, links, active states */
+  --primary-hover: #4f46e5;      /* Darker indigo — button hover state */
+  --border-color: #334155;       /* Subtle gray — borders, dividers */
+  --danger: #ef4444;             /* Red — errors, destructive actions */
+  --success: #10b981;            /* Green — success messages, online status */
+  /* 🔮 FUTURE: Add --warning, --info, --bg-tertiary, --border-light */
 }
 
+/* ─── CSS Reset ────────────────────────────────────────────────────────────── */
+/* Remove default browser margins, padding, and set consistent box sizing      */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box;  /* Width includes padding+border (not added on top) */
+  /* Without this, a 100px element with 10px padding would be 120px wide! */
 }
 
+/* ─── Body Styles ──────────────────────────────────────────────────────────── */
 body {
+  /* Font stack: Try Inter first, then system fonts as fallbacks */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);     /* Dark background */
+  color: var(--text-primary);             /* Light text */
+  -webkit-font-smoothing: antialiased;    /* Smoother fonts on macOS/iOS */
+  -moz-osx-font-smoothing: grayscale;     /* Smoother fonts on Firefox */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* ─── Base Element Resets ──────────────────────────────────────────────────── */
+/* Remove default link styling (blue color, underline) */
+a { color: inherit; text-decoration: none; }
 
-ul {
-  list-style: none;
-}
+/* Remove default list bullets */
+ul { list-style: none; }
 
-button, input, textarea {
-  font-family: inherit;
-}
+/* Inherit font family for form elements (they don't by default!) */
+button, input, textarea { font-family: inherit; }
 
+/* Reset button styles */
 button {
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: inherit;
-  transition: all 0.2s ease;
+  cursor: pointer;       /* Show hand cursor on hover */
+  border: none;          /* Remove default border */
+  background: none;      /* Remove default background */
+  color: inherit;        /* Use parent's text color */
+  transition: all 0.2s ease;  /* Smooth transitions for hover effects */
 }
 
+/* ─── Layout: App Container ───────────────────────────────────────────────── */
+/* Flexbox layout: sidebar on the left, content on the right */
 .app-container {
-  display: flex;
-  min-height: 100vh;
+  display: flex;        /* Flexbox — children sit side by side */
+  min-height: 100vh;    /* At least full viewport height */
   width: 100%;
 }
 
+/* Main content area (next to sidebar) */
 .main-content {
-  flex: 1;
+  flex: 1;              /* Takes remaining space after sidebar */
   display: flex;
   flex-direction: column;
-  margin-left: 250px;
+  margin-left: 250px;   /* Space for the fixed-width sidebar */
 }
 
+/* Mobile: Sidebar becomes bottom bar, no left margin needed */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    margin-bottom: 60px;
+    margin-bottom: 60px;  /* Space for bottom navigation bar */
   }
 }
 
-/* Common UI Utilities */
+/* ─── Utility Classes (Reusable Styles) ───────────────────────────────────── */
+/* TOPIC: Utility CSS — Small, single-purpose classes that can be combined */
+
+/* Primary button style */
 .btn-primary {
   background-color: var(--primary-accent);
   color: white;
@@ -79,11 +124,11 @@ button {
   justify-content: center;
   gap: 0.5rem;
 }
-
 .btn-primary:hover {
   background-color: var(--primary-hover);
 }
 
+/* Form input style */
 .input-field {
   width: 100%;
   background-color: var(--bg-secondary);
@@ -94,11 +139,11 @@ button {
   outline: none;
   transition: border-color 0.2s ease;
 }
-
 .input-field:focus {
-  border-color: var(--primary-accent);
+  border-color: var(--primary-accent);  /* Highlight border on focus */
 }
 
+/* Card component */
 .card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -106,25 +151,29 @@ button {
   padding: 1.5rem;
 }
 
+/* Flex center utility */
 .flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Glassmorphism panel (frosted glass effect) */
+/* TOPIC: Glassmorphism — Modern UI trend using blur + transparency */
 .glass-panel {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.7);       /* Semi-transparent background */
+  backdrop-filter: blur(10px);               /* Blur content behind the element */
+  -webkit-backdrop-filter: blur(10px);       /* Safari support */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);  /* Subtle light border */
 }
 
-/* Animations */
+/* ─── Animations ───────────────────────────────────────────────────────────── */
+/* TOPIC: CSS Animations — Making elements appear/move smoothly */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }  /* Start: invisible, 10px below */
+  to { opacity: 1; transform: translateY(0); }        /* End: visible, normal position */
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn 0.3s ease forwards;  /* 0.3s duration, ease timing, stay at end state */
 }

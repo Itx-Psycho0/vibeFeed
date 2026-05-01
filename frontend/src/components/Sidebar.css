@@ -1,86 +1,87 @@
+/* ============================================================================
+ * 📁 FILE: Sidebar.css — Sidebar Navigation Styles
+ * 📚 TOPIC: Fixed Positioning, Responsive Design, Mobile Bottom Navigation
+ * ============================================================================
+ * Desktop: Fixed sidebar on the left (250px wide)
+ * Mobile: Transforms into a bottom tab bar (like Instagram mobile)
+ * ============================================================================ */
+
+/* ─── Desktop Sidebar ──────────────────────────────────────────────────────── */
 .sidebar {
   width: 250px;
-  height: 100vh;
-  position: fixed;
-  left: 0;
+  height: 100vh;           /* Full viewport height */
+  position: fixed;         /* Stays in place while scrolling */
+  left: 0;                 /* Anchored to left edge */
   top: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  /* Stack children vertically (logo → nav → footer) */
   border-right: 1px solid var(--border-color);
-  z-index: 100;
+  z-index: 100;            /* Above other content (prevents overlap issues) */
 }
 
-.sidebar-logo {
-  padding: 2rem 1.5rem;
-}
+/* Logo section */
+.sidebar-logo { padding: 2rem 1.5rem; }
 
 .sidebar-logo h2 {
   color: var(--primary-accent);
   font-size: 1.8rem;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.5px;  /* Slightly tighter letters (modern look) */
 }
 
-.sidebar-nav {
-  flex: 1;
-  padding: 0 1rem;
-}
+/* Nav container takes remaining space (flex: 1) */
+.sidebar-nav { flex: 1; padding: 0 1rem; }
 
+/* Each navigation item (link) */
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1rem;               /* Space between icon and text */
   padding: 1rem;
   margin-bottom: 0.5rem;
   border-radius: 0.75rem;
   color: var(--text-primary);
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease;  /* Smooth hover effect */
 }
 
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
+/* Hover effect — subtle background highlight */
+.nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
 
+/* Active route — highlighted with accent color */
 .nav-item.active {
   background-color: var(--primary-accent);
   color: white;
   font-weight: 600;
 }
 
-.sidebar-footer {
-  padding: 1.5rem 1rem;
-}
+/* Footer section (logout button) */
+.sidebar-footer { padding: 1.5rem 1rem; }
 
-.logout-btn {
-  width: 100%;
-  color: var(--danger);
-}
+/* Logout button styled in danger/red color */
+.logout-btn { width: 100%; color: var(--danger); }
+.logout-btn:hover { background-color: rgba(239, 68, 68, 0.1); }
 
-.logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-}
-
+/* ─── Mobile Responsive: Bottom Tab Bar ────────────────────────────────────── */
+/* TOPIC: @media Queries — Apply styles only at certain screen sizes */
+/* max-width: 768px targets tablets and phones */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
     height: 60px;
-    bottom: 0;
-    top: auto;
-    flex-direction: row;
+    bottom: 0;              /* Move to bottom of screen */
+    top: auto;              /* Override top: 0 */
+    flex-direction: row;    /* Horizontal layout */
     border-right: none;
     border-top: 1px solid var(--border-color);
   }
 
-  .sidebar-logo, .sidebar-footer, .nav-label {
-    display: none;
-  }
+  /* Hide elements that don't fit in a bottom bar */
+  .sidebar-logo, .sidebar-footer, .nav-label { display: none; }
 
-  .sidebar-nav {
-    padding: 0;
-    width: 100%;
-  }
+  .sidebar-nav { padding: 0; width: 100%; }
 
+  /* Icons distributed evenly across the bottom */
   .sidebar-nav ul {
     display: flex;
     justify-content: space-around;
@@ -88,8 +89,5 @@
     align-items: center;
   }
 
-  .nav-item {
-    padding: 0.5rem;
-    margin: 0;
-  }
+  .nav-item { padding: 0.5rem; margin: 0; }
 }

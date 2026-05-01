@@ -1,3 +1,12 @@
+// ============================================================================
+// 📁 FILE: Notifications.jsx — Notifications Page (Placeholder)
+// 📚 TOPIC: Placeholder Components
+// ============================================================================
+// 🔮 FUTURE: Real-time notification list, mark as read, notification types
+//           (like, comment, follow, mention), Socket.io integration,
+//           notification grouping ("5 people liked your post")
+// ============================================================================
+
 import React from 'react';
 
 const Notifications = () => {

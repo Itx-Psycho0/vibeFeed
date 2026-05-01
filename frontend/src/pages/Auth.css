@@ -1,66 +1,58 @@
+/* ============================================================================
+ * 📁 FILE: Auth.css — Authentication Pages Styles (Login & Register)
+ * 📚 TOPIC: Radial Gradients, Glassmorphism, Form Styling, Background Clip
+ * ============================================================================
+ * Shared styles for Login.jsx and Register.jsx — creates a premium, modern
+ * auth page with gradient backgrounds and glass-effect cards.
+ * ============================================================================ */
+
+/* Auth page container — centered card with gradient background */
 .auth-container {
   min-height: 100vh;
   padding: 2rem;
+  /* Radial gradients create subtle indigo glows behind the card */
+  /* TOPIC: CSS Gradients — Creating smooth color transitions */
   background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
               radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.1), transparent 40%);
 }
 
+/* Auth card — the white/glass panel containing the form */
 .auth-card {
   width: 100%;
   max-width: 420px;
   padding: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);  /* Deep shadow for depth */
+  border: 1px solid rgba(255, 255, 255, 0.1);          /* Subtle glass border */
 }
 
-.auth-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
+/* Header section */
+.auth-header { text-align: center; margin-bottom: 2rem; }
 
 .auth-header h2 {
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  /* Gradient text effect — text with a gradient color fill */
+  /* TOPIC: Background-Clip Text — Making text appear with gradient colors */
   background: linear-gradient(to right, #fff, #a5b4fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;           /* Clip background to text shape */
+  -webkit-text-fill-color: transparent;     /* Make text transparent so gradient shows */
 }
 
-.auth-header p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
+.auth-header p { color: var(--text-secondary); font-size: 0.95rem; }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
+/* Form layout */
+.auth-form { display: flex; flex-direction: column; gap: 1.25rem; }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+/* Form groups (label + input) */
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }
 
-.form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
+/* Submit button */
+.auth-submit { margin-top: 1rem; padding: 0.875rem; font-size: 1rem; }
+.auth-submit:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.auth-submit {
-  margin-top: 1rem;
-  padding: 0.875rem;
-  font-size: 1rem;
-}
-
-.auth-submit:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
+/* Error message banner */
 .auth-error {
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--danger);
@@ -72,19 +64,7 @@
   text-align: center;
 }
 
-.auth-footer {
-  margin-top: 2rem;
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.auth-footer a {
-  color: var(--primary-accent);
-  font-weight: 500;
-  margin-left: 0.25rem;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
-}
+/* Footer with link to other auth page */
+.auth-footer { margin-top: 2rem; text-align: center; font-size: 0.875rem; color: var(--text-secondary); }
+.auth-footer a { color: var(--primary-accent); font-weight: 500; margin-left: 0.25rem; }
+.auth-footer a:hover { text-decoration: underline; }

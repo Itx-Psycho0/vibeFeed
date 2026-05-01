@@ -1,5 +1,15 @@
+// ============================================================================
+// 📁 FILE: story.controller.js — Stories (24-hour temporary content)
+// 📚 TOPIC: Temporary Content, Story Feed Grouping, View Tracking
+// ============================================================================
+// 🎯 PURPOSE: Handles create, view, delete stories and grouping stories by author.
+// Stories auto-delete after 24 hours via MongoDB TTL index (set in story.model.js).
+// 🔮 FUTURE: Story reactions, story replies, story highlights, music overlay
+// ============================================================================
+
 import Story from '../models/story.model.js'
 
+// ─── CREATE STORY ───────────────────────────────────────────────────────────
 export const createStory = async (req, res, next) => {
   try {
     const { media, caption } = req.body
@@ -12,11 +22,16 @@ export const createStory = async (req, res, next) => {
   } catch (error) { next(error) }
 }
 
+// ─── GET STORY FEED (grouped by author) ─────────────────────────────────────
 export const getStoryFeed = async (req, res, next) => {
   try {
+    // Show stories from people you follow + your own, that haven't expired
     const feedUsers = [...req.user.following, req.user._id]
     const stories = await Story.find({ author: { $in: feedUsers }, expiresAt: { $gt: new Date() } })
       .sort({ createdAt: -1 }).populate('author', 'username fullName profilePicture')
+
+    // Group stories by author (like Instagram — each user has a "ring" of stories)
+    // Result: [{ author: {username: "alice"}, stories: [story1, story2] }, ...]
     const grouped = {}
     stories.forEach((s) => {
       const aid = s.author._id.toString()
@@ -27,15 +42,18 @@ export const getStoryFeed = async (req, res, next) => {
   } catch (error) { next(error) }
 }
 
+// ─── GET SINGLE STORY (and track view) ──────────────────────────────────────
 export const getStoryById = async (req, res, next) => {
   try {
     const story = await Story.findById(req.params.id).populate('author', 'username fullName profilePicture')
     if (!story) return res.status(404).json({ success: false, message: 'Story not found or expired' })
+    // Track viewer (add current user to viewers if not already there)
     if (!story.viewers.includes(req.user._id)) { story.viewers.push(req.user._id); await story.save() }
     res.status(200).json({ success: true, data: story })
   } catch (error) { next(error) }
 }
 
+// ─── DELETE STORY (author only) ─────────────────────────────────────────────
 export const deleteStory = async (req, res, next) => {
   try {
     const story = await Story.findById(req.params.id)
@@ -47,6 +65,7 @@ export const deleteStory = async (req, res, next) => {
   } catch (error) { next(error) }
 }
 
+// ─── GET STORY VIEWERS (author only) ────────────────────────────────────────
 export const getStoryViewers = async (req, res, next) => {
   try {
     const story = await Story.findById(req.params.id).populate('viewers', 'username fullName profilePicture')

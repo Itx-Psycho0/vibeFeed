@@ -1,3 +1,12 @@
+// ============================================================================
+// 📁 FILE: Explore.jsx — Explore/Discover Page (Placeholder)
+// 📚 TOPIC: Placeholder Components, Coming Soon Pages
+// ============================================================================
+// 🎯 PURPOSE: Placeholder page for the Explore feature.
+// 🔮 FUTURE: Show trending posts, search bar, category filters, suggested creators,
+//           infinite scroll grid layout (like Instagram explore), hashtag pages
+// ============================================================================
+
 import React from 'react';
 
 const Explore = () => {

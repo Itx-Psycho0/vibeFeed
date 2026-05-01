@@ -1,3 +1,12 @@
+// ============================================================================
+// 📁 FILE: Messages.jsx — Messages/Chat Page (Placeholder)
+// 📚 TOPIC: Placeholder Components
+// ============================================================================
+// 🔮 FUTURE: Conversation list, real-time chat UI, message input, media sending,
+//           Socket.io integration for instant messages, typing indicators,
+//           online status, read receipts, message search
+// ============================================================================
+
 import React from 'react';
 
 const Messages = () => {

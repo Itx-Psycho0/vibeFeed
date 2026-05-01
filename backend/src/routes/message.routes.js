@@ -1,3 +1,7 @@
+// ============================================================================
+// 📁 FILE: message.routes.js — Messaging Routes
+// ============================================================================
+
 import express from 'express'
 import {
   getConversations, createConversation,
@@ -6,12 +10,11 @@ import {
 import auth from '../middlewares/auth.middleware.js'
 
 const router = express.Router()
-
 router.use(auth)
 
-router.get('/conversations', getConversations)
-router.post('/conversations', createConversation)
-router.get('/:conversationId', getMessages)
-router.post('/:conversationId', sendMessage)
+router.get('/conversations', getConversations)     // Get all conversations (inbox)
+router.post('/conversations', createConversation)  // Start a new conversation
+router.get('/:conversationId', getMessages)        // Get messages in a conversation
+router.post('/:conversationId', sendMessage)       // Send a message
 
 export default router

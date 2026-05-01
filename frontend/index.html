@@ -1,13 +1,43 @@
+<!-- ============================================================================
+  📁 FILE: index.html (Frontend Entry Point)
+  📍 LOCATION: frontend/index.html
+  📚 TOPIC: HTML Document, SPA (Single Page Application), Vite Setup
+  ============================================================================
+
+  🎯 PURPOSE:
+  This is the ONLY HTML file in a React SPA (Single Page Application).
+  React dynamically renders ALL pages inside the <div id="root"> element.
+  
+  🧠 HOW SPA WORKS:
+  Traditional websites: Each page is a separate HTML file (about.html, contact.html)
+  SPA (React): ONE HTML file. JavaScript dynamically changes the content.
+  
+  The browser loads this HTML → loads main.jsx → React takes over → renders components
+  
+  🔀 ALTERNATIVES: Next.js (SSR/SSG), Astro, Remix, Svelte, Vue.js, Angular
+  ============================================================================ -->
+
 <!doctype html>
+<!-- 'lang="en"' helps screen readers and search engines know the page is in English -->
 <html lang="en">
   <head>
+    <!-- Character encoding — UTF-8 supports all languages and emojis -->
     <meta charset="UTF-8" />
+    <!-- Favicon (the small icon in the browser tab) -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Viewport meta — makes the page responsive on mobile devices -->
+    <!-- width=device-width: page width matches the device screen width -->
+    <!-- initial-scale=1.0: no zoom on load -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <!-- Page title shown in browser tab — 🔮 FUTURE: Change to "VibeFeed" -->
+    <title>VibeFeed</title>
   </head>
   <body>
+    <!-- This empty div is where React renders the ENTIRE application -->
+    <!-- React's ReactDOM.createRoot() targets this element -->
     <div id="root"></div>
+    <!-- Vite loads our React app as an ES Module (type="module") -->
+    <!-- This triggers the React rendering pipeline: main.jsx → App.jsx → pages -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
